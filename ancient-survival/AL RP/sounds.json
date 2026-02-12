@@ -1,0 +1,12 @@
+{
+    "entity_sounds": {
+        "entities": {
+            "drk:gravestone_item_container": {
+                "volume": 0,
+                "events": {
+                    "death": ""
+                }
+            }
+        }
+    }
+}

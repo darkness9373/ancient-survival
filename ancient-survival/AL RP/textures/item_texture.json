@@ -1,0 +1,9 @@
+{
+	"resource_pack_name": "Gravestone",
+	"texture_name": "atlas.items",
+	"texture_data": {
+		"gravestone_key": {
+			"textures": "textures/items/gravestone_key"
+		}
+	}
+}

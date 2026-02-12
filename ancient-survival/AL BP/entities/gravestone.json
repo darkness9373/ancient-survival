@@ -1,0 +1,60 @@
+{
+    "format_version": "1.20.80",
+    "minecraft:entity": {
+        "description": {
+            "identifier": "drk:gravestone_item",
+            "is_spawnable": true,
+            "is_summonable": true,
+            "is_experimental": false
+        },
+        "component_groups": {},
+        "components": {
+            "minecraft:type_family": {
+                "family": [
+                    "inanimate"
+                ]
+            },
+            "minecraft:collision_box": {
+                "height": 0.0,
+                "width": 0.0
+            },
+            "minecraft:health": {
+                "value": 99999,
+                "max": 99999
+            },
+            "minecraft:inventory": {
+                "additional_slots_per_strength": 0,
+                "can_be_siphoned_from": false,
+                "container_type": "inventory",
+                "inventory_size": 54,
+                "private": false,
+                "restrict_to_owner": true
+            },
+            "minecraft:damage_sensor": {
+                "triggers": [
+                    {
+                        "cause": "all",
+                        "deals_damage": "no"
+                    }
+                ]
+            },
+            "minecraft:physics": {
+                "has_collision": false,
+                "has_gravity": false
+            },
+            "minecraft:pushable": {
+                "is_pushable": false,
+                "is_pushable_by_piston": false
+            },
+            "minecraft:knockback_resistance": {
+                "value": 99999
+            },
+            "minecraft:nameable": {
+                "allow_name_tag_renaming": false,
+                "always_show": true
+            },
+            "minecraft:persistent": {}
+        },
+        "events": {}
+    }
+}

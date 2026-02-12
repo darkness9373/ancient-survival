@@ -1,0 +1,38 @@
+{
+    "format_version": 2,
+    "header": {
+        "description": "-",
+        "name": "Ancient Legacy",
+        "uuid": "0ffc2cc7-349a-4284-af0d-1b6da234d808",
+        "version": [
+            1,
+            0,
+            2
+        ],
+        "min_engine_version": [
+            1,
+            21,
+            100
+        ]
+    },
+    "modules": [
+    {
+        "description": "Example vanilla resource pack",
+        "type": "resources",
+        "uuid": "814cddf9-f854-47fe-95e6-bf895f25bb14",
+        "version": [
+            1,
+            0,
+            2
+        ]
+    }],
+    "dependencies": [
+    {
+        "uuid": "f08a311e-e89c-40f7-83d8-bc0ecf822cb8",
+        "version": [
+            1,
+            0,
+            0
+        ]
+    }]
+}

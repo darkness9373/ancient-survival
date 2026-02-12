@@ -1,0 +1,67 @@
+{
+    "format_version": 2,
+    "header": {
+        "description": "-",
+        "name": "Ancient Legacy",
+        "uuid": "f08a311e-e89c-40f7-83d8-bc0ecf822cb8",
+        "version": [
+            1,
+            0,
+            0
+        ],
+        "min_engine_version": [
+            1,
+            21,
+            100
+        ]
+    },
+    "modules": [
+        {
+            "description": "-",
+            "type": "script",
+            "language": "javascript",
+            "uuid": "e51a1570-a078-4653-90dc-bc9113f8eb7e",
+            "version": [
+                1,
+                0,
+                0
+            ],
+            "entry": "scripts/main.js"
+        }
+    ],
+    "dependencies": [
+        {
+            "uuid": "d4ffea2a-7d37-4279-8986-3ec293263920",
+            "version": [
+                1,
+                0,
+                3
+            ]
+        },
+        {
+            "uuid": "8b1aa586-0871-4bed-b9e0-47997bc19dd5",
+            "version": [
+                0,
+                5,
+                1
+            ]
+        },
+        
+        {
+            "uuid": "0ffc2cc7-349a-4284-af0d-1b6da234d808",
+            "version": [
+                1,
+                0,
+                2
+            ]
+        },
+        {
+            "module_name": "@minecraft/server",
+            "version": "2.5.0-beta"
+        },
+        {
+            "module_name": "@minecraft/server-ui",
+            "version": "2.1.0-beta"
+        }
+    ]
+}
