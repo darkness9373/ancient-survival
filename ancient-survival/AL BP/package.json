@@ -1,15 +1,4 @@
 {
-  "name": "al-bp",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
     "@minecraft/server": "^2.6.0-beta.1.26.0-stable",
     "@minecraft/server-ui": "^2.1.0-beta.1.26.0-stable"

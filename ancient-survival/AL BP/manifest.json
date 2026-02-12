@@ -31,11 +31,11 @@
     ],
     "dependencies": [
         {
-            "uuid": "d4ffea2a-7d37-4279-8986-3ec293263920",
+            "uuid": "1a951f78-1647-420f-b3f6-87fe1eab7363",
             "version": [
                 1,
                 0,
-                3
+                0
             ]
         },
         {
