@@ -21,7 +21,7 @@ import { openUnbanMenu } from './unban';
 system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
     customCommandRegistry.registerEnum(
         'as:objectives',
-        ['money', 'killMob', 'killMonster', 'timePlayed']
+        ['money', 'killMob', 'killMonster', 'timePlayed', 'daily']
     )
     customCommandRegistry.registerEnum(
         'as:scoreboard',
@@ -45,6 +45,10 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
     }, (origin, objective, value) => {
         const player = origin.sourceEntity
         if (!(player instanceof Player)) return;
+        if (objective === 'daily') {
+            const db = new PlayerDatabase(player, 'LoginDayCount')
+            db.set(Number(db.get() ?? 1) + value)
+        }
         Score.add(player, objective, value)
     })
     customCommandRegistry.registerCommand(
@@ -65,6 +69,10 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
     }, (origin, objective, value) => {
         const player = origin.sourceEntity
         if (!(player instanceof Player)) return;
+        if (objective === 'daily') {
+            const db = new PlayerDatabase(player, 'LoginDayCount')
+            db.set(value)
+        }
         Score.set(player, objective, value)
     })
     customCommandRegistry.registerCommand(
@@ -85,6 +93,10 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
     }, (origin, objective, value) => {
         const player = origin.sourceEntity
         if (!(player instanceof Player)) return;
+        if (objective === 'daily') {
+            const db = new PlayerDatabase(player, 'LoginDayCount')
+            db.set(Number(db.get() ?? 1) - value)
+        }
         Score.remove(player, objective, value)
     })
     customCommandRegistry.registerCommand(
@@ -101,6 +113,10 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
     }, (origin, objective) => {
         const player = origin.sourceEntity
         if (!(player instanceof Player)) return;
+        if (objective === 'daily') {
+            const db = new PlayerDatabase(player, 'LoginDayCount')
+            player.sendMoney(text(`Objective\n > ${objective}\n > ${db.get() ?? 1}`).System.deff)
+        }
         player.sendMessage(text(`Objective\n > ${objective}\n > ${Score.get(player, objective)}`).System.deff)
     })
     customCommandRegistry.registerCommand(

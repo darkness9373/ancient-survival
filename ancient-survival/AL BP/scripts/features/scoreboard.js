@@ -89,7 +89,7 @@ system.runInterval(() => {
             BREAK: makeLine('—', 15),
             SILVER: Extra.metricNumber(Score.get(player, 'silver') ?? 0),
             GACHA: Score.get(player, 'gacha') ?? 0,
-            DAILY: new PlayerDatabase(player, "LoginDayCount") ?? 0
+            DAILY: new PlayerDatabase(player, "LoginDayCount").get() ?? 1
         }]
         const scr = new PlayerDatabase(player, 'Scoreboard').get() ?? 'show';
         if (scr === 'hide') return;
