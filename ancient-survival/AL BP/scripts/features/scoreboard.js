@@ -9,26 +9,6 @@ import { text } from '../config/text';
 import { RANK_CONFIG, PROGRESS_CONFIG } from '../config/system';
 
 
-export function scoreboardSet(player) {
-    const form = new ModalFormData()
-    form.title('Scoreboard Setup')
-    form.toggle('Enable Scoreboard')
-    OpenUI.force(player, form).then(async r => {
-        if (r.canceled) return;
-        const [ tog ] = r.formValues
-        if (tog === true) {
-            const scr = new PlayerDatabase(player, 'Scoreboard')
-            scr.set(true)
-            player.sendMessage(text(`Scoreboard diaktifkan!!`).System.succ)
-        } else {
-            const scr = new PlayerDatabase(player, 'Scoreboard')
-            scr.set(false)
-            player.sendMessage(text(`Scoreboard dinonaktifkan!!`).System.fail)
-            player.onScreenDisplay.setTitle('')
-        }
-    })
-}
-
 
 /* =========================
    PLACEHOLDER ENGINE
@@ -51,10 +31,10 @@ const board = {
         '@BLANK',
         '     §2§lAncient Survival§r     ',
         '@BLANK',
-        ' > Name: @NAME',
-        ' > Rank: @RANK',
-        ' > Gold: @GOLD',
-        ' > Silver: @SILVER',
+        ' > Name: @NAME§r',
+        ' > Rank: @RANK§r',
+        ' > Gold: §6@GOLD§r',
+        ' > Silver: §7@SILVER§r',
         ' > Ping: @PING',
         ' > Total Gacha: @GACHA',
         '@BLANK',
@@ -72,14 +52,17 @@ system.runInterval(() => {
     const online = world.getPlayers().length
     
     for (const player of world.getPlayers()) {
-        const rnk = new PlayerDatabase(player, 'Rank') ?? 'Member'
-        const prog = new PlayerDatabase(player, 'RankProgress') ?? 'Peasant'
-        const rankShow = rnk ? RANK_CONFIG[rnk] ?? RANK_CONFIG.Member : PROGRESS_CONFIG[prog] ?? PROGRESS_CONFIG.Peasant;
+        const rnk = new PlayerDatabase(player, 'Rank').get() ?? 'Member'
+        const prog = new PlayerDatabase(player, 'RankProgress').get() ?? 'Peasant'
+        const rankShow = 
+            RANK_CONFIG[rnk].show ??
+            PROGRESS_CONFIG[prog].show ??
+            '§l§bMember§r'
         const ping = Score.get(player, 'ping') ?? 0
         const pingShow = ping >= 100 ? `§e${ping}ms§r` : `§a${ping}ms§r`;
         const data = [{
             NAME: player.name,
-            RANK: rankShow.show,
+            RANK: rankShow,
             GOLD: Extra.metricNumber(Score.get(player, 'gold') ?? 0),
             PING: pingShow,
             ONLINE: online,
@@ -118,4 +101,5 @@ function makeLine(value, length) {
     for (let i = 0; i < length; i++) {
         line += value
     }
+    return line;
 }

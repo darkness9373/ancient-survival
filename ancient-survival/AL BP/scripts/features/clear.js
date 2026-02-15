@@ -2,7 +2,7 @@ import { world, system } from '@minecraft/server'
 import { text } from '../config/text';
 
 /* ================= CONFIG ================= */
-const CLEAR_INTERVAL = 10 * 60 // menit → detik (contoh 5 menit)
+const CLEAR_INTERVAL = 10 * 60 // 10 menit
 const CLEAR_ENTITIES = [
   'minecraft:item',
   'minecraft:xp_orb'
@@ -16,7 +16,7 @@ system.runInterval(() => {
   timer--
   
   // WARNING 30 DETIK (CHAT)
-  if (timer === 30) {
+  if (timer <= 30 && timer > 29) {
     world.sendMessage(
       text('Item & XP akan dibersihkan dalam §e30 §adetik!').System.succ
     )
@@ -28,7 +28,7 @@ system.runInterval(() => {
       player.onScreenDisplay.setActionBar(
         `§eClear Lag dalam §a${timer} §edetik`
       )
-      if (timer <= 10) {
+      if ([10, 5, 4, 3, 2, 1].includes(timer)) {
         player.playSound('random.click')
       }
     }
@@ -47,16 +47,17 @@ function runClearLag() {
   let total = 0
   
   for (const dim of [
-    world.getDimension('overworld'),
-    world.getDimension('nether'),
-    world.getDimension('the_end')
-  ]) {
-    for (const entity of dim.getEntities()) {
-      if (entity.typeId === 'minecraft:player') continue
-      if (!CLEAR_ENTITIES.includes(entity.typeId)) continue
-      
-      entity.remove()
-      total++
+      world.getDimension('overworld'),
+      world.getDimension('nether'),
+      world.getDimension('the_end')
+    ]) {
+    for (let x = 0; x < CLEAR_ENTITIES.length; x++) {
+      for (const entity of dim.getEntities({
+        type: CLEAR_ENTITIES[x]
+      })) {
+        entity.remove()
+        total++
+      }
     }
   }
   for (const player of world.getPlayers()) {

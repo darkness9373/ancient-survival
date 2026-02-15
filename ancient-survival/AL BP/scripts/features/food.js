@@ -10,7 +10,7 @@ import { RANK_CONFIG } from '../config/system.js'
 export function foodPlayer(player) {
   
   /* ====== CEK STATUS ====== */
-  const rank = new PlayerDatabase(player, 'Status').get() ?? 'Member'
+  const rank = new PlayerDatabase(player, 'Rank').get() ?? 'Member'
   const config = RANK_CONFIG[rank]
   
   if (!config) {
@@ -43,23 +43,30 @@ export function foodPlayer(player) {
     const sisa = cooldown - passed
     const menit = Math.floor(sisa / 60)
     const detik = sisa % 60
+    const timeText =
+      menit > 0 ? `${menit}m ${detik}s` : `${detik}s`
     
     return player.sendMessage(
-      text(`§cFood masih cooldown §6${menit}m ${detik}s`).System.fail
+      text(`Food masih cooldown §6${timeText}`).System.fail
     )
   }
   
   /* ====== ISI HUNGER ====== */
   try {
     const hunger = player.getComponent(EntityComponentTypes.Hunger)
+    if (!hunger) {
+      return player.sendMessage(text("Hunger component tidak ditemukan").System.fail)
+    }
     if (hunger.currentValue === hunger.effectiveMax) {
       return player.sendMessage(text('Hunger kamu masih penuh').System.warn)
     }
     if (player.hasTag('admin')) {
       hunger.resetToMaxValue()
+      player.playSound("random.burp")
       return
     }
     hunger.resetToMaxValue()
+    player.playSound("random.burp")
   } catch (err) {
     return player.sendMessage(
       text('Gagal mengisi hunger').System.fail

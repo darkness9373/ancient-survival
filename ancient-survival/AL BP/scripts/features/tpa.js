@@ -60,15 +60,13 @@ function sendRequest(sender, target) {
   const oldSend = JSON.parse(sendDB.get() ?? 'null')
   
   if (oldSend && !isExpired(oldSend.time)) {
-    sender.sendMessage(text('Sudah melakukan request').System.warn)
+    sender.sendMessage(text('Kamu masih punya request aktif').System.warn)
     return
   }
   
-  /* ==== TARGET ARRAY ==== */
+  /* ==== TARGET ==== */
   const targetDB = new PlayerDatabase(target, 'Request')
-  let list = getArray(targetDB)
-  
-  list = cleanupArray(list)
+  let list = cleanupArray(getArray(targetDB))
   
   if (list.some(r => r.fromId === sender.id)) {
     sender.sendMessage(text('Request sudah dikirim').System.warn)
@@ -82,7 +80,6 @@ function sendRequest(sender, target) {
   }
   
   list.push(data)
-  
   setArray(targetDB, list)
   
   sendDB.set(JSON.stringify({
@@ -117,7 +114,8 @@ export function tpAcceptCommand(player) {
   setArray(db, list)
   
   if (list.length === 1) {
-    return accept(player, list[0])
+    accept(player, list[0])
+    return
   }
   
   const form = new ActionFormData()
@@ -136,10 +134,14 @@ function accept(target, data) {
   const sender = world.getPlayers()
     .find(p => p.id === data.fromId)
   
-  if (!sender) return
+  if (!sender) {
+    target.sendMessage(text('Player sudah offline').System.warn)
+    return
+  }
   
   sender.tryTeleport(target.location, {
-    dimension: target.dimension
+    dimension: target.dimension,
+    keepVelocity: false
   })
   
   removeBoth(target, sender)
@@ -168,7 +170,8 @@ export function tpDenyCommand(player) {
   setArray(db, list)
   
   if (list.length === 1) {
-    return deny(player, list[0])
+    deny(player, list[0])
+    return
   }
   
   const form = new ActionFormData()
@@ -200,18 +203,15 @@ function deny(target, data) {
   )
 }
 
-/* ================= REMOVE BOTH ================= */
+/* ================= REMOVE ================= */
 
 function removeBoth(target, sender) {
   
-  /* target array */
   const targetDB = new PlayerDatabase(target, 'Request')
   let list = getArray(targetDB)
   
   list = list.filter(r => r.fromId !== sender.id)
-  
   setArray(targetDB, list)
   
-  /* sender single */
   new PlayerDatabase(sender, 'RequestSend').delete()
 }

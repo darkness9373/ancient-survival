@@ -10,7 +10,7 @@ import { RANK_CONFIG } from '../config/system'
 export function healPlayer(player) {
   
   /* ====== CEK STATUS ====== */
-  const rank = new PlayerDatabase(player, 'Status').get() ?? 'Member'
+  const rank = new PlayerDatabase(player, 'Rank').get() ?? 'Member'
   const config = RANK_CONFIG[rank]
   
   if (!config) {
@@ -52,14 +52,19 @@ export function healPlayer(player) {
   /* ====== ISI DARAH ====== */
   try {
     const health = player.getComponent(EntityComponentTypes.Health)
+    if (!health) {
+      return player.sendMessage(text('Health component error').System.fail)
+    }
     if (health.currentValue === health.effectiveMax) {
       return player.sendMessage(text('Darah kamu masih penuh').System.warn)
     }
     if (player.hasTag('admin')) {
       health.resetToMaxValue()
+      player.playSound('random.levelup')
       return
     }
     health.resetToMaxValue()
+    player.playSound('random.levelup')
   } catch (err) {
     return player.sendMessage(
       text('Gagal mengisi darah').System.fail

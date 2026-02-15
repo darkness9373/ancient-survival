@@ -19,12 +19,15 @@ export function playtime(sec = 0) {
     const s = sec % 60
     
     if (d > 0) {
-        return `${d}d ${pad(h)}h ${pad(m)}m`
+        return `${d}d ${h}h ${m}m`
     }
     if (h > 0) {
-        return `${pad(h)}h ${pad(m)}m`
+        return `${h}h ${m}m`
     }
-    return `${pad(m)}m`
+    if (m > 0) {
+        return `${m}m`
+    }
+    return `${s}s`
 }
 
 function pad(num) {

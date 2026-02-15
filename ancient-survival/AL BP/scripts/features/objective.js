@@ -1,11 +1,13 @@
 import { world } from '@minecraft/server';
 import Obj from '../extension/Objective.js';
+import { OBJECTIVES } from '../config/system';
 
 world.afterEvents.worldLoad.subscribe(() => {
-  Obj.add('money')
-  Obj.add('moneyRaw')
-  Obj.add('killMonster')
-  Obj.add('killMob')
-  Obj.add('ping')
-  Obj.add('timePlayed')
+  const objectives = world.scoreboard.getObjectives().map(o => o.id)
+  
+  for (const obj of OBJECTIVES) {
+    if (!objectives.includes(obj)) {
+      Obj.add(obj)
+    }
+  }
 })

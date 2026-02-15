@@ -60,7 +60,9 @@ export function addRankForm(player) {
     const db = new WorldDatabase('AddRank')
     const queue = JSON.parse(db.get() ?? '[]')
     
-    queue.push({ name: playerName, rank })
+    if (!queue.some(q => q.name === playerName && q.rank === rank)) {
+      queue.push({ name: playerName.toLowerCase(), rank })
+    }
     db.set(JSON.stringify(queue))
     
     player.sendMessage(
@@ -77,7 +79,7 @@ system.runInterval(() => {
   if (!queue.length) return
   
   for (const player of world.getPlayers()) {
-    const index = queue.findIndex(q => q.name === player.name)
+    const index = queue.findIndex(q => q.name === player.name.toLowerCase())
     if (index === -1) continue
     
     const { rank } = queue[index]
@@ -103,9 +105,11 @@ system.runInterval(() => {
     queue.splice(index, 1)
     addDB.set(JSON.stringify(queue))
   }
-}, 100)
+}, 200)
 
 function applyRank(player, rank) {
+  const currentRank = new PlayerDatabase(player, 'Rank').get() ?? 'Member'
+  if (currentRank === rank) return;
   const config = RANK_CONFIG[rank]
   if (!config) return
   

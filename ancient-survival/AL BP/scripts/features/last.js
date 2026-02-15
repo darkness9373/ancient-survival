@@ -82,9 +82,9 @@ function teleportToCheckpoint(player, data) {
 
 // config/lobby.js
 const LOBBY_POS = {
-    x: -395,
-    y: 71,
-    z: -2091,
+    x: 27,
+    y: 262,
+    z: -60,
     dimension: 'overworld'
 }
 

@@ -1,8 +1,8 @@
 import { world } from "@minecraft/server"
-import { PlayerDatabase } from "../extension/Database"
+import { PlayerDatabase, WorldDatabase } from "../extension/Database"
 import Tag from "../extension/Tag"
-import { getData } from '../config/database'
 import { text } from '../config/text'
+import { RANK_CONFIG, PROGRESS_CONFIG } from '../config/system';
 
 /* ================= CONFIG ================= */
 
@@ -13,8 +13,6 @@ const ADMIN_SECRET_CODE = 'ancient-admin-26' // GANTI SESUAI MAU KAMU
 world.beforeEvents.chatSend.subscribe(data => {
     const player = data.sender
     const msg = data.message
-    const prefix = getData(player).chatPrefix
-    if (msg.startsWith(prefix)) return;
     data.cancel = true;
     if (msg === ADMIN_SECRET_CODE) {
         if (player.hasTag('admin')) {
@@ -22,36 +20,25 @@ world.beforeEvents.chatSend.subscribe(data => {
                 text('Kamu sudah menjadi Admin').System.warn
             )
         }
-        const used = new PlayerDatabase(player, 'AdminActivated').get()
-        if (used) {
-            return player.sendMessage(
-                text('Kode admin sudah pernah digunakan').System.fail
-            )
-        }
         Tag.add(player, 'admin')
-        new PlayerDatabase(player, 'AdminActivated').set(true)
         return player.sendMessage(
             text('Akses Admin berhasil diaktifkan').System.succ
         )
     }
-    const rank = getData(player).rank.get() ?? 'Newbie'
+    const rank = new PlayerDatabase(player, 'Rank').get() ?? undefined
+    const progress = new PlayerDatabase(player, 'RankProgress').get() ?? 'Peasant'
+    const rankData = RANK_CONFIG[rank]
+    const progressData = PROGRESS_CONFIG[progress]
+    
+    const show = rankData?.prefix ??
+        progressData?.prefix ??
+        ''
+    if (player.hasTag("muted")) {
+        return player.sendMessage("§cKamu sedang di-mute")
+    }
     if (player.hasTag('admin')) {
-        world.sendMessage(`§l§e[ADMIN] §r${player.name} §8» §r${msg}`)
+        world.sendMessage(`§l§6[ADMIN] §r${player.name}§r §8» §r${msg}`)
         return;
     }
-    const color = RANK_COLOR[rank] ?? RANK_COLOR.Default
-    world.sendMessage(`§l${color}[${rank.toUpperCase()}] §r${player.name} §8» §r${msg}`)
+    world.sendMessage(`${show} §r§f${player.name}§r §8» §7${msg}`)
 })
-
-
-
-
-const RANK_COLOR = {
-    Default: '§f',
-    Rookie: '§n',
-    Fighter: '§4',
-    Elite: '§2',
-    Veteran: '§b',
-    Legend: '§6',
-    Admin: '§e'
-}

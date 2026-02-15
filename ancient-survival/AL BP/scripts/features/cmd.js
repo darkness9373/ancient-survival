@@ -10,7 +10,7 @@ import { healPlayer } from './heal'
 import { foodPlayer } from './food'
 import { text } from '../config/text'
 import { checkpointCommand } from './last';
-import { sendMoney } from './money';
+import { sendGold, sendSilver } from './money';
 import { tpaCommand, tpAcceptCommand, tpDenyCommand } from './tpa'
 import { inspectMenu } from './inspect';
 import { banMenu } from './ban';
@@ -21,11 +21,15 @@ import { openUnbanMenu } from './unban';
 system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
     customCommandRegistry.registerEnum(
         'as:objectives',
-        ['money', 'killMob', 'killMonster', 'timePlayed', 'daily']
+        ['gold', 'killMob', 'killMonster', 'timePlayed', 'daily', 'silver']
     )
     customCommandRegistry.registerEnum(
         'as:scoreboard',
         ['show', 'hide']
+    )
+    customCommandRegistry.registerEnum(
+        'as:pvp',
+        ['on', 'off']
     )
     customCommandRegistry.registerCommand(
     {
@@ -115,7 +119,7 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
         if (!(player instanceof Player)) return;
         if (objective === 'daily') {
             const db = new PlayerDatabase(player, 'LoginDayCount')
-            player.sendMoney(text(`Objective\n > ${objective}\n > ${db.get() ?? 1}`).System.deff)
+            return player.sendMessage(text(`Objective\n > ${objective}\n > ${db.get() ?? 1}`).System.deff)
         }
         player.sendMessage(text(`Objective\n > ${objective}\n > ${Score.get(player, objective)}`).System.deff)
     })
@@ -127,6 +131,7 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
         cheatsRequired: true
     }, (origin) => {
         const player = origin.sourceEntity
+        if (!(player instanceof Player)) return;
         system.run(() => npcShopMenu(player))
     })
     customCommandRegistry.registerCommand(
@@ -137,6 +142,7 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
         cheatsRequired: true
     }, (origin) => {
         const player = origin.sourceEntity
+        if (!(player instanceof Player)) return;
         system.run(() => summonNpc(player))
     })
     customCommandRegistry.registerCommand(
@@ -147,6 +153,7 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
         cheatsRequired: true
     }, (origin) => {
         const player = origin.sourceEntity
+        if (!(player instanceof Player)) return;
         system.run(() => warpUI(player))
     })
     customCommandRegistry.registerCommand(
@@ -157,6 +164,7 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
         cheatsRequired: true
     }, (origin) => {
         const player = origin.sourceEntity
+        if (!(player instanceof Player)) return;
         system.run(() => makeRedeem(player))
     })
     customCommandRegistry.registerCommand(
@@ -167,6 +175,7 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
         cheatsRequired: true
     }, (origin) => {
         const player = origin.sourceEntity
+        if (!(player instanceof Player)) return;
         system.run(() => claimRedeem(player))
     })
     customCommandRegistry.registerCommand(
@@ -177,6 +186,7 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
         cheatsRequired: true
     }, (origin) => {
         const player = origin.sourceEntity
+        if (!(player instanceof Player)) return;
         system.run(() => addRankForm(player))
     })
     customCommandRegistry.registerCommand(
@@ -187,6 +197,7 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
         cheatsRequired: true
     }, (origin) => {
         const player = origin.sourceEntity
+        if (!(player instanceof Player)) return;
         system.run(() => healPlayer(player))
     })
     customCommandRegistry.registerCommand(
@@ -197,6 +208,7 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
         cheatsRequired: true
     }, (origin) => {
         const player = origin.sourceEntity
+        if (!(player instanceof Player)) return;
         system.run(() => foodPlayer(player))
     })
     customCommandRegistry.registerCommand(
@@ -207,6 +219,7 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
         cheatsRequired: true
     }, (origin) => {
         const player = origin.sourceEntity
+        if (!(player instanceof Player)) return;
         system.run(() => tpaCommand(player))
     })
     customCommandRegistry.registerCommand(
@@ -217,6 +230,7 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
         cheatsRequired: true
     }, (origin) => {
         const player = origin.sourceEntity
+        if (!(player instanceof Player)) return;
         system.run(() => tpAcceptCommand(player))
     })
     customCommandRegistry.registerCommand(
@@ -227,6 +241,7 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
         cheatsRequired: true
     }, (origin) => {
         const player = origin.sourceEntity
+        if (!(player instanceof Player)) return;
         system.run(() => tpDenyCommand(player))
     })
     customCommandRegistry.registerCommand(
@@ -237,6 +252,7 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
         cheatsRequired: true
     }, (origin) => {
         const player = origin.sourceEntity
+        if (!(player instanceof Player)) return;
         system.run(() => setRank(player))
     })
     customCommandRegistry.registerCommand(
@@ -247,6 +263,7 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
         cheatsRequired: true
     }, (origin) => {
         const player = origin.sourceEntity
+        if (!(player instanceof Player)) return;
         system.run(() => checkpointCommand(player))
     })
     customCommandRegistry.registerCommand(
@@ -267,21 +284,37 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
         if (show === 'show') {
             score.set('show')
             player.sendMessage(text(`Scoreboard diaktifkan!!`).System.succ)
-        } else {
+        } else if (show === 'hide') {
             score.set('hide')
             player.sendMessage(text(`Scoreboard dinonaktifkan!!`).System.fail)
             system.run(() => player.onScreenDisplay.setTitle(''))
+        } else {
+            player.sendMessage(
+                text('Gunakan: show/hide').System.fail
+            )
         }
     })
     customCommandRegistry.registerCommand(
     {
-        name: 'as:sendcoin',
-        description: 'Send coin you have to other players',
+        name: 'as:sendgold',
+        description: 'Send Gold you have to other players',
         permissionLevel: CommandPermissionLevel.Any,
         cheatsRequired: true
     }, (origin) => {
         const player = origin.sourceEntity
-        system.run(() => sendMoney(player))
+        if (!(player instanceof Player)) return;
+        system.run(() => sendGold(player))
+    })
+    customCommandRegistry.registerCommand(
+    {
+        name: 'as:sendsilver',
+        description: 'Send Silver you have to other players',
+        permissionLevel: CommandPermissionLevel.Any,
+        cheatsRequired: true
+    }, (origin) => {
+        const player = origin.sourceEntity
+        if (!(player instanceof Player)) return;
+        system.run(() => sendSilver(player))
     })
     customCommandRegistry.registerCommand(
     {
@@ -291,6 +324,7 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
         cheatsRequired: true
     }, (origin) => {
         const player = origin.sourceEntity
+        if (!(player instanceof Player)) return;
         system.run(() => inspectMenu(player))
     })
     customCommandRegistry.registerCommand(
@@ -315,16 +349,41 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
         if (!(player instanceof Player)) return
         system.run(() => openUnbanMenu(player))
     })
+    customCommandRegistry.registerCommand(
+    {
+        name: 'as:banlist',
+        description: 'Show a list of banned players',
+        permissionLevel: CommandPermissionLevel.GameDirectors,
+        cheatsRequired: true
+    }, (origin) => {
+        const player = origin.sourceEntity
+        if (!(player instanceof Player)) return
+        return player.sendMessage('§6In Progress')
+    })
+    customCommandRegistry.registerCommand(
+    {
+        name: 'as:pvp',
+        description: 'Turn PVP mode on or off',
+        permissionLevel: CommandPermissionLevel.Any,
+        mandatoryParameters: [
+        {
+            name: 'as:pvp',
+            type: CustomCommandParamType.Enum
+        }],
+        cheatsRequired: true
+    }, (origin, objective) => {
+        const player = origin.sourceEntity
+        if (!(player instanceof Player)) return;
+        if (player.hasTag('on_arena')) return player.sendMessage(text('Tidak bisa mengubah mode PvP di dalam arena').System.fail)
+        if (objective === 'on') {
+            if (player.hasTag('pvp')) return player.sendMessage(text('Mode PvP sudah aktif').System.warn)
+            player.sendMessage(text('PvP mode diaktifkan').System.succ)
+            system.run(() => player.addTag('pvp'))
+        }
+        if (objective === 'off') {
+            if (!player.hasTag('pvp')) return player.sendMessage(text('Mode PvP sudah nonaktif').System.warn)
+            player.sendMessage(text('PvP mode dinonaktifkan').System.succ)
+            system.run(() => player.removeTag('pvp'))
+        }
+    })
 })
-
-/* ================= HELPER ================= */
-
-function isAdmin(player) {
-    return player.hasTag('admin')
-}
-
-function noAdmin(player) {
-    player.sendMessage(
-        text('Menu ini hanya bisa diakses oleh Admin!!').System.warn
-    )
-}

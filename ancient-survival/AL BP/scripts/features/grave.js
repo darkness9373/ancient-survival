@@ -119,6 +119,48 @@ function findGravestoneLocation(dim, x, y, z) {
     return { x, y, z }
 }
 
+function isPassable(block) {
+    if (!block) return true;
+    
+    const id = block.typeId;
+    
+    return (
+        id === 'minecraft:air' ||
+        id === 'minecraft:water' ||
+        id === 'minecraft:lava'
+    );
+}
+
+function findNearbySafeSpot(dim, x, y, z) {
+    const radius = 5;
+    
+    for (let dy = -2; dy <= 2; dy++) {
+        for (let dx = -radius; dx <= radius; dx++) {
+            for (let dz = -radius; dz <= radius; dz++) {
+                
+                const bx = x + dx;
+                const by = y + dy;
+                const bz = z + dz;
+                
+                const below = dim.getBlock({ x: bx, y: by - 1, z: bz });
+                const at = dim.getBlock({ x: bx, y: by, z: bz });
+                const above = dim.getBlock({ x: bx, y: by + 1, z: bz });
+                
+                if (
+                    below &&
+                    !isPassable(below) && // tanah solid
+                    isPassable(at) &&
+                    isPassable(above)
+                ) {
+                    return { x: bx, y: by, z: bz };
+                }
+            }
+        }
+    }
+    
+    return { x, y, z }; // fallback
+}
+
 const GRAVESTONE_ENTITY = 'drk:gravestone_item'
 const GRAVESTONE_BLOCK = 'drk:gravestone_block'
 const GRAVESTONE_KEY = 'drk:gravestone_key'
@@ -193,6 +235,7 @@ world.beforeEvents.playerBreakBlock.subscribe(async data => {
     
     if (storedXP > 0) {
         player.addLevels(storedXP)
+        grave.setDynamicProperty('stored_xp', 0);
     }
     player.playSound('random.levelup')
     player.sendMessage(
@@ -270,6 +313,7 @@ world.beforeEvents.playerInteractWithBlock.subscribe(async data => {
     
     if (storedXP > 0) {
         player.addLevels(storedXP)
+        grave.setDynamicProperty('stored_xp', 0);
     }
     player.playSound('random.levelup')
     player.sendMessage(
@@ -290,7 +334,14 @@ world.afterEvents.itemUse.subscribe(ev => {
     if (item.typeId !== GRAVESTONE_KEY) return
     
     let gravestoneLocation = item.getDynamicProperty('gravestone_location') ?? '{}'
-    let raw = JSON.parse(gravestoneLocation)
+    let raw;
+    try {
+        raw = JSON.parse(gravestoneLocation);
+    } catch {
+        return;
+    }
+    
+    if (!raw.dimension) return player.sendMessage(text('Data dimension error! Gagal melakukan teleport').System.fail);
     
     const dim = world.getDimension(raw.dimension)
     
@@ -307,10 +358,14 @@ world.afterEvents.itemUse.subscribe(ev => {
             keepVelocity: false,
             checkForBlocks: true
         })
+        /* === HAPUS KEY === */
+        const equip = player.getComponent('equippable')
+        equip.setEquipment('Mainhand', undefined)
         
         /* === CEK KONDISI BLOK === */
         const blockBelow = getBlockTypeAt(dim, raw.x, raw.y - 1, raw.z)
         const blockAt = getBlockTypeAt(dim, raw.x, raw.y, raw.z)
+        const blockHead = getBlockTypeAt(dim, raw.x, raw.y + 1, raw.z)
         
         /* === LAVA === */
         if (blockBelow === 'minecraft:lava' || blockAt === 'minecraft:lava') {
@@ -320,34 +375,101 @@ world.afterEvents.itemUse.subscribe(ev => {
         }
         
         /* === AIR === */
-        if (blockAt === 'minecraft:water') {
+        if (blockAt === 'minecraft:water' || blockHead === 'minecraft:water') {
             player.addEffect('water_breathing', 10 * 20, {
                 showParticles: false
             })
         }
-        
-        /* === HAPUS KEY === */
-        const equip = player.getComponent('equippable')
-        equip.setEquipment('Mainhand', undefined)
     })
 })
+
+const LOBBY_POS = {
+    x: 27,
+    y: 262,
+    z: -60,
+    dimension: 'overworld'
+}
 
 world.afterEvents.entityDie.subscribe(data => {
     const player = data.deadEntity
     if (!(player instanceof Player)) return
     
-    const dim = player.dimension
+    let dim = player.dimension
     const pos = player.location
+    
+    const isVoidDeath = pos.y < -64
     
     const bx = Math.floor(pos.x)
     const by = Math.floor(pos.y)
     const bz = Math.floor(pos.z)
     
-    const safe = findGravestoneLocation(dim, bx, by, bz)
+    let gx, gy, gz, safe;
     
-    const gx = safe.x
-    const gy = safe.y
-    const gz = safe.z
+    if (isVoidDeath) {
+        const sp = player.getSpawnPoint();
+        
+        if (sp) {
+            dim = world.getDimension(sp.dimension);
+            
+            const sx = Math.floor(sp.x);
+            const sy = Math.floor(sp.y);
+            const sz = Math.floor(sp.z);
+            
+            // cek block spawn
+            const spawnBlock = dim.getBlock({ x: sx, y: sy, z: sz });
+            
+            if (!isPassable(spawnBlock)) {
+                const safeSpot = findNearbySafeSpot(dim, sx, sy, sz);
+                gx = safeSpot.x;
+                gy = safeSpot.y;
+                gz = safeSpot.z;
+            } else {
+                gx = sx;
+                gy = sy;
+                gz = sz;
+            }
+            
+        } else {
+            dim = world.getDimension(LOBBY_POS.dimension)
+            
+            const sx = Math.floor(LOBBY_POS.x);
+            const sy = Math.floor(LOBBY_POS.y);
+            const sz = Math.floor(LOBBY_POS.z);
+            
+            const spawnBlock = dim.getBlock({ x: sx, y: sy, z: sz });
+            
+            if (!isPassable(spawnBlock)) {
+                const safeSpot = findNearbySafeSpot(dim, sx, sy, sz);
+                gx = safeSpot.x;
+                gy = safeSpot.y;
+                gz = safeSpot.z;
+            } else {
+                gx = sx;
+                gy = sy;
+                gz = sz;
+            }
+        }
+    } else {
+        
+        // 🔹 CEK BLOCK DI TEMPAT MATI
+        const blockAtDeath = dim.getBlock({ x: bx, y: by, z: bz });
+        
+        // kalau block bukan passable → cari spot aman
+        if (!isPassable(blockAtDeath)) {
+            const safeSpot = findNearbySafeSpot(dim, bx, by, bz);
+            
+            gx = safeSpot.x;
+            gy = safeSpot.y;
+            gz = safeSpot.z;
+        }
+        else {
+            safe = findGravestoneLocation(dim, bx, by, bz);
+            
+            gx = safe.x;
+            gy = safe.y;
+            gz = safe.z;
+        }
+    }
     
     const playerInv = player.getComponent('inventory').container
     
@@ -364,9 +486,11 @@ world.afterEvents.entityDie.subscribe(data => {
     
     /* === BLOCK GRAVESTONE === */
     const graveBlock = dim.getBlock({ x: gx, y: gy, z: gz })
-    graveBlock.setPermutation(BlockPermutation.resolve(GRAVESTONE_BLOCK))
+    if (graveBlock) {
+        graveBlock.setPermutation(BlockPermutation.resolve(GRAVESTONE_BLOCK))
+    }
     
-    if (safe.placeStoneBelow) {
+    if (safe?.placeStoneBelow) {
         const below = dim.getBlock({ x: gx, y: gy - 1, z: gz })
         below.setPermutation(BlockPermutation.resolve('minecraft:stone'))
     }
@@ -399,7 +523,7 @@ world.afterEvents.entityDie.subscribe(data => {
     const near = dim.getEntities({
         location: pos,
         type: 'minecraft:item',
-        maxDistance: 3
+        maxDistance: 6
     })
     
     for (const item of near) {

@@ -2,12 +2,14 @@ import { world, system } from '@minecraft/server';
 import { PlayerDatabase } from "../extension/Database.js";
 import Score from "../extension/Score.js";
 import { ItemStack } from "@minecraft/server";
+import { text } from '../config/text';
+import { DAILY_REWARDS } from '../config/system';
 
 system.runInterval(() => {
     world.getPlayers().forEach(player => {
         checkDailyLogin(player)
     })
-}, 1200)
+}, 600)
 
 const WIB_OFFSET = 7 * 60 * 60 * 1000; // UTC+7
 
@@ -30,7 +32,7 @@ function checkDailyLogin(player) {
     lastLoginDB.set(today);
     dayCountDB.set(count);
     
-    player.sendMessage(`§aDaily login ke-${count}!`);
+    player.sendMessage(text(`Daily login ke-${count}!`).System.succ);
     giveDailyReward(player, count);
 }
 
@@ -84,7 +86,7 @@ function giveDailyReward(player, day) {
         }
     }
     
-    player.sendMessage(`§eKamu mendapat reward daily login hari ke-${day}!`);
+    player.sendMessage(text(`Kamu mendapat reward daily login hari ke-${day}!`).System.succ);
 }
 
 function giveItemSafely(player, itemStack, amount) {
@@ -132,74 +134,3 @@ function hasEmptySlot(container) {
 function normalizeId(id) {
     return id.includes(":") ? id : `minecraft:${id}`;
 }
-
-const DAILY_REWARDS = {
-    1: {
-        rank: "Peasant",
-        items: [
-            { id: "cooked_beef", amount: 32 },
-            { id: "stone_pickaxe", amount: 1 },
-            { id: "stone_axe", amount: 1 },
-            { id: "stone_shovel", amount: 1 },
-            { id: "stone_sword", amount: 1 }
-        ]
-    },
-    
-    3: {
-        silver: 50,
-        exp: 150,
-        items: [{ id: "cooked_beef", amount: 64 }],
-        rank: "Wanderer"
-    },
-    
-    6: {
-        exp: 200,
-        silver: 75,
-        items: [{ id: "iron_ingot", amount: 20 }],
-        rank: "Adventurer"
-    },
-    
-    9: {
-        exp: 300,
-        silver: 100,
-        items: [
-            { id: "gold_ingot", amount: 25 },
-            { id: "iron_ingot", amount: 40 }
-        ],
-        rank: "Mercenary"
-    },
-    
-    12: {
-        exp: 350,
-        silver: 125,
-        gold: 20,
-        items: [
-            { id: "gold_ingot", amount: 35 },
-            { id: "iron_ingot", amount: 50 }
-        ],
-        rank: "Warrior"
-    },
-    
-    15: {
-        exp: 500,
-        silver: 150,
-        gold: 30,
-        items: [
-            { id: "diamond", amount: 25 },
-            { id: "iron_ingot", amount: 64 }
-        ],
-        rank: "Knight"
-    },
-    
-    18: {
-        exp: 750,
-        silver: 175,
-        gold: 75,
-        items: [
-            { id: "diamond", amount: 35 },
-            { id: "iron_ingot", amount: 64 }
-        ],
-        freeLegend: true,
-        rank: "Champion"
-    }
-};

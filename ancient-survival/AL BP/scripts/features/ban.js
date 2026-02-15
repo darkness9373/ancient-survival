@@ -20,7 +20,13 @@ world.afterEvents.playerSpawn.subscribe(ev => {
   const nameData = nameDb.get()
   
   if (nameData) {
-    const ban = JSON.parse(nameData)
+    let ban
+    try {
+      ban = JSON.parse(nameData)
+    } catch {
+      nameDb.remove()
+      return
+    }
     
     const idDb = new WorldDatabase(`Ban:${player.id}`)
     idDb.set(JSON.stringify({ ...ban, id: player.id }))
@@ -48,6 +54,7 @@ world.afterEvents.playerSpawn.subscribe(ev => {
   // mengizinkan admin login. Kalau memang mau auto-unban admin, ganti
   // `return` dengan `db.remove(); return;`
   if (player.hasTag('admin')) {
+    db.remove()
     return
   }
   
@@ -265,4 +272,8 @@ function formatBanDuration(duration) {
   if (duration.permanent) return 'Permanent'
   const ms = duration.expiresAt - Date.now()
   return playtime(Math.floor(ms / 1000))
+}
+
+function cleanText(str) {
+  return str.replace(/["\\]/g, '')
 }

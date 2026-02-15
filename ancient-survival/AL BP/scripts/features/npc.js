@@ -93,11 +93,11 @@ function spawnNPC(player, type, name, tagInput) {
         player.location
     )
     if (!npc) {
-        player.sendMessage(text('Gagal spawn NPC!').System.fail)
+        return player.sendMessage(text('Gagal spawn NPC!').System.fail)
     }
     
     if (name.trim()) {
-        npc.nameTag = name;
+        npc.nameTag = name.replace(/\\n/g,"\n");
     }
     
     const tags = tagInput.split(',').map(t => t.trim()).filter(Boolean)
@@ -114,11 +114,11 @@ function spawnNPC(player, type, name, tagInput) {
  * @param {Player} player 
  */
 export function npcShopMenu(player) {
-    let coin = Score.get(player, 'money')
+    let silver = Score.get(player, 'silver')
     let func = []
     let form = new ActionFormData()
     form.title('Ancient Store')
-    form.body(`Player: ${player.name}\nCoin: ${coin}\n\nSelamat datang di Ancient Store!\nPilih kategori item yang ingin kamu beli.`)
+    form.body(`Player: ${player.name}\nSilver: ${silver}\n\nSelamat datang di Ancient Store!\nPilih kategori item yang ingin kamu beli.`)
     {
         form.button('Buy Items', 'textures/items/gold_ingot')
         func.push(() => {
@@ -142,10 +142,10 @@ export function npcShopMenu(player) {
  * @param {Player} player 
  */
 export function buyItem(player) {
-    let coin = Score.get(player, 'money')
+    let silver = Score.get(player, 'silver')
     let form = new ActionFormData()
     form.title('Buy Items')
-    form.body(`Player: ${player.name}\nCoins: ${coin}\n\nPilih category item yang ingin kamu beli:`)
+    form.body(`Player: ${player.name}\nSilver: ${silver}\n\nPilih category item yang ingin kamu beli:`)
     const categories = Object.keys(itemListBuy)
     for (const category of categories) {
         form.button(category)
@@ -159,21 +159,21 @@ export function buyItem(player) {
 
 
 function openBuyItem(player, category) {
-    const coin = Score.get(player, 'money')
+    const silver = Score.get(player, 'silver')
     const items = itemListBuy[category]
     const form = new ActionFormData()
         .title(category)
-        .body(`Coins: ${coin}\n\nPilih item yang ingin kamu beli.`)
+        .body(`Silver: ${silver}\n\nPilih item yang ingin kamu beli.`)
     for (const item of items) {
         if (item.bundle) {
             form.button(
-                `${item.bundle.amount}× ${Extra.formatName(item.id)}\n${item.bundle.price} Coins`,
+                `${item.bundle.amount}× ${Extra.formatName(item.id)}\n${item.bundle.price} Silver`,
                 item.tex
             )
         } else if (category === 'Enchant') {
-            form.button(`${item.name}\n${item.price} Coins`, item.tex)
+            form.button(`${item.name}\n${item.price} Silver`, item.tex)
         } else {
-            form.button(`${Extra.formatName(item.id)}\n${item.price} Coins`, item.tex)
+            form.button(`${Extra.formatName(item.id)}\n${item.price} Silver`, item.tex)
         }
     }
     OpenUI.force(player, form).then(async r => {
@@ -235,8 +235,11 @@ function buyItemsConfirm(player, id, price, amount, category, name) {
     OpenUI.force(player, form).then(async r => {
         if (r.canceled || r.selection === 1) return player.sendMessage(text('Pembayaran telah dibatalkan').System.fail)
         if (r.selection === 0) {
-            let coin = Score.get(player, 'money')
-            if (coin >= price) {
+            let silver = Score.get(player, 'silver') ?? 0
+            if (silver < price) return player.sendMessage(
+                text('Silver kamu tidak mencukupi').System.fail
+            )
+            if (silver >= price) {
                 if (category === 'Enchant') {
                     try {
                         const items = itemListBuy[category]
@@ -251,9 +254,9 @@ function buyItemsConfirm(player, id, price, amount, category, name) {
                                 
                                 giveItemSafely(player, book, amount)
                                 
-                                Score.remove(player, 'money', price)
+                                Score.remove(player, 'silver', price)
                                 player.sendMessage(
-                                    text(`Kamu berhasil membeli ${amount} ${name} dengan harga ${price} Coins`).System.succ
+                                    text(`Kamu berhasil membeli ${amount} ${name} dengan harga ${price} Silver`).System.succ
                                 )
                                 return;
                             }
@@ -265,9 +268,9 @@ function buyItemsConfirm(player, id, price, amount, category, name) {
                     const item = new ItemStack(normalizeId(id), 1)
                     giveItemSafely(player, item, amount)
                     
-                    Score.remove(player, 'money', price)
+                    Score.remove(player, 'silver', price)
                     player.sendMessage(
-                        text(`Kamu berhasil membeli ${amount} ${Extra.formatName(id)} dengan harga ${price} Coins.`).System.succ
+                        text(`Kamu berhasil membeli ${amount} ${Extra.formatName(id)} dengan harga ${price} Silver.`).System.succ
                     )
                 }
             }
@@ -281,20 +284,20 @@ function confirmBundleBuy(player, id, amount, price) {
     form.body(
         `Item: ${Extra.formatName(id)}\n` +
         `Jumlah: ${amount}\n` +
-        `Harga: ${price} Coins`
+        `Harga: ${price} Silver`
     )
     form.button1('Confirm')
     form.button2('Cancel')
     OpenUI.force(player, form).then(r => {
         if (r.canceled || r.selection === 1) return player.sendMessage(text('Pembayaran telah dibatalkan').System.fail)
-        let coin = Score.get(player, 'money')
-        if (coin < price) {
-            return player.sendMessage(text('Coin tidak mencukupi').System.fail)
+        let silver = Score.get(player, 'silver')
+        if (silver < price) {
+            return player.sendMessage(text('Silver kamu tidak mencukupi').System.fail)
         }
         const item = new ItemStack(normalizeId(id), 1)
         giveItemSafely(player, item, amount)
-        Score.remove(player, 'money', price)
-        player.sendMessage(text(`Berhasil membeli ${amount} ${Extra.formatName(id)} seharga ${price} Coin`).System.succ)
+        Score.remove(player, 'silver', price)
+        player.sendMessage(text(`Berhasil membeli ${amount} ${Extra.formatName(id)} seharga ${price} Silver`).System.succ)
     })
 }
 
@@ -347,12 +350,12 @@ function giveItemSafely(player, itemStack, amount) {
 }
 
 export function sellItem(player) {
-    const coin = Score.get(player, 'money');
+    const silver = Score.get(player, 'silver');
     const form = new ActionFormData();
     const actions = [];
     
     form.title('Sell Shop');
-    form.body(`Player: ${player.name}\nCoin: ${coin}\n\nPilih kategori item:`);
+    form.body(`Player: ${player.name}\nSilver: ${silver}\n\nPilih kategori item:`);
     
     for (const category of Object.keys(itemListSell)) {
         form.button(category);
@@ -367,12 +370,12 @@ export function sellItem(player) {
 
 
 function openSellCategory(player, category) {
-    const coin = Score.get(player, 'money');
+    const silver = Score.get(player, 'silver');
     const form = new ActionFormData();
     const actions = [];
     
     form.title(`Sell → ${category}`);
-    form.body(`Coin: ${coin}\n\nPilih item yang ingin dijual:`);
+    form.body(`Silver: ${silver}\n\nPilih item yang ingin dijual:`);
     
     for (const item of itemListSell[category]) {
         const owned = countItem(player, item.id);
@@ -422,7 +425,7 @@ function sellItemConfirm(player, id, amount, totalPrice) {
         `Apakah kamu yakin ingin menjual?\n\n` +
         `Item: ${Extra.formatName(id)}\n` +
         `Jumlah: ${amount}\n` +
-        `Total Harga: ${totalPrice} Coin`
+        `Total Harga: ${totalPrice} silver`
     );
     form.button1('Confirm Sell');
     form.button2('Cancel');
@@ -438,11 +441,11 @@ function sellItemConfirm(player, id, amount, totalPrice) {
         }
         
         removeItem(player, id, amount);
-        Score.add(player, 'money', totalPrice);
+        Score.add(player, 'silver', totalPrice);
         
         player.sendMessage(
             text(`§aBerhasil menjual ${amount} ${Extra.formatName(id)} ` +
-                `dengan harga ${totalPrice} Coin.`).System.succ
+                `dengan harga ${totalPrice} silver.`).System.succ
         );
     });
 }
@@ -499,6 +502,7 @@ const itemListBuy = {
         { id: 'golden_carrot', price: 10, tex: 'textures/items/carrot_golden' },
         { id: 'golden_apple', price: 30, tex: 'textures/items/apple_golden' }
     ],
+    /*
     Cooking: [
     {
         id: 'cc:orange_seeds',
@@ -629,6 +633,7 @@ const itemListBuy = {
         }
     }
     ],
+    */
     Material: [
         { id: 'iron_ingot', price: 20, tex: 'textures/items/iron_ingot' },
         { id: 'gold_ingot', price: 24, tex: 'textures/items/gold_ingot' },
@@ -735,12 +740,7 @@ const itemListSell = {
     Farming: [
         { id: 'wheat', price: 3, tex: 'textures/items/wheat' },
         { id: 'carrot', price: 2, tex: 'textures/items/carrot' },
-        { id: 'sugar_cane', price: 4, tex: 'textures/items/reeds' },
-        
-        { id: 'cc:corn', price: 5, tex: 'textures/cc/cooking/items/crops/corn' },
-        { id: 'cc:tomato', price: 5, tex: 'textures/cc/cooking/items/crops/tomato' },
-        { id: 'cc:banana', price: 5, tex: 'textures/cc/cooking/items/crops/banana' },
-        { id: 'cc:broccoli', price: 5, tex: 'textures/cc/cooking/items/crops/broccoli' }
+        { id: 'sugar_cane', price: 4, tex: 'textures/items/reeds' }
     ],
     
     Food: [
@@ -753,10 +753,6 @@ const itemListSell = {
     Animal_Drop: [
         { id: 'feather', price: 2, tex: 'textures/items/feather' },
         { id: 'leather', price: 3, tex: 'textures/items/leather' },
-        { id: 'rabbit_foot', price: 8, tex: 'textures/items/rabbit_foot' },
-        
-        { id: 'cc:deer_antler', price: 10, tex: 'textures/cc/animals/items/deer.antler' },
-        { id: 'cc:shark_tooth', price: 30, tex: 'textures/cc/animals/items/shark.tooth' },
-        { id: 'cc:scorpion_tail', price: 35, tex: 'textures/cc/animals/items/scorpion_tail' }
+        { id: 'rabbit_foot', price: 8, tex: 'textures/items/rabbit_foot' }
     ]
 }

@@ -7,17 +7,21 @@ function updateNameTag(player) {
     const rank = new PlayerDatabase(player, 'Rank').get() ?? 'Member';
     const rankProgress = new PlayerDatabase(player, 'RankProgress').get() ?? 'Peasant';
     
-    const rankData = RANK_CONFIG[rank] ?? RANK_CONFIG.Member;
+    const rankData = RANK_CONFIG[rank] ?? RANK_CONFIG.Member
     const progressData = PROGRESS_CONFIG[rankProgress] ?? PROGRESS_CONFIG.Peasant
-    const prefix = rankData.prefix ?? `[${rank}]§r`;
-    const proprefix = progressData.prefix ?? `[${rankProgress}]§r`
+    const prefix = rankData.prefix
+    const proprefix = progressData.prefix
     
     // Health
     const healthComp = player.getComponent("minecraft:health");
     const hp = Math.ceil(healthComp.currentValue);
     
+    if (player.hasTag('admin')) {
+      return player.nameTag = `§l§6[Admin]§r ${player.name}\n${proprefix}§r ${hp}`
+    }
+    
     player.nameTag =
-      `${prefix} ${player.name}\n${proprefix}§r ${hp}§c♥§r`;
+      `${prefix} ${player.name}\n${proprefix}§r ${hp}`;
     
   } catch (e) {
     // biar ga spam error
