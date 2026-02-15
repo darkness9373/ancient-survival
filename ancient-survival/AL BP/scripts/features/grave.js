@@ -409,7 +409,7 @@ world.afterEvents.entityDie.subscribe(data => {
         const sp = player.getSpawnPoint();
         
         if (sp) {
-            dim = world.getDimension(sp.dimension);
+            dim = world.getDimension(sp.dimension.id);
             
             const sx = Math.floor(sp.x);
             const sy = Math.floor(sp.y);
