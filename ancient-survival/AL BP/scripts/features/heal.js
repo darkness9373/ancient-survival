@@ -1,7 +1,7 @@
 import { PlayerDatabase } from '../extension/Database.js'
 import { Player, EntityComponentTypes } from '@minecraft/server'
 import { text } from '../config/text'
-import { RANK_CONFIG } from '../config/system'
+import { RANK_CONFIG, CUSTOM_CONFIG } from '../config/system'
 
 
 /**
@@ -11,8 +11,18 @@ export function healPlayer(player) {
   
   /* ====== CEK STATUS ====== */
   const rank = new PlayerDatabase(player, 'Rank').get() ?? 'Member'
-  const config = RANK_CONFIG[rank]
+  let config
   
+  if (player.hasTag('customrank')) {
+    const custom = new PlayerDatabase(player, 'CustomRank').get()
+    
+    if (custom === rank) {
+      config = CUSTOM_CONFIG
+    }
+  }
+  if (!config) {
+    config = RANK_CONFIG[rank]
+  }
   if (!config) {
     return player.sendMessage(
       text('Status tidak valid di config').System.fail

@@ -7,7 +7,7 @@
         "version": [
             1,
             0,
-            2
+            0
         ],
         "min_engine_version": [
             1,
@@ -20,15 +20,6 @@
         "description": "Example vanilla resource pack",
         "type": "resources",
         "uuid": "814cddf9-f854-47fe-95e6-bf895f25bb14",
-        "version": [
-            1,
-            0,
-            2
-        ]
-    }],
-    "dependencies": [
-    {
-        "uuid": "f08a311e-e89c-40f7-83d8-bc0ecf822cb8",
         "version": [
             1,
             0,

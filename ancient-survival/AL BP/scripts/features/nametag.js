@@ -5,32 +5,53 @@ import { RANK_CONFIG, PROGRESS_CONFIG } from "../config/system.js";
 function updateNameTag(player) {
   try {
     const rank = new PlayerDatabase(player, 'Rank').get() ?? 'Member';
-    const rankProgress = new PlayerDatabase(player, 'RankProgress').get() ?? 'Peasant';
+    const progress = new PlayerDatabase(player, 'RankProgress').get() ?? 'Peasant';
+    const custom = new PlayerDatabase(player, 'CustomRank').get();
+    const clr = new PlayerDatabase(player, 'CustomRankColor').get() ?? '§f';
     
-    const rankData = RANK_CONFIG[rank] ?? RANK_CONFIG.Member
-    const progressData = PROGRESS_CONFIG[rankProgress] ?? PROGRESS_CONFIG.Peasant
-    const prefix = rankData.prefix
-    const proprefix = progressData.prefix
+    const rankData = RANK_CONFIG[rank] ?? {};
+    const progData = PROGRESS_CONFIG[progress] ?? {};
     
-    // Health
-    const healthComp = player.getComponent("minecraft:health");
-    const hp = Math.ceil(healthComp.currentValue);
+    /* ================= BARIS 1 (RANK) ================= */
     
-    if (player.hasTag('admin')) {
-      return player.nameTag = `§l§6[Admin]§r ${player.name}\n${proprefix}§r ${hp}`
+    let rankPrefix = '';
+    
+    // Prioritas custom
+    if (custom) {
+      rankPrefix = `§l${clr}[${custom}]§r`;
+    }
+    // Rank biasa
+    else if (rankData.prefix) {
+      rankPrefix = rankData.prefix;
     }
     
-    player.nameTag =
-      `${prefix} ${player.name}\n${proprefix}§r ${hp}`;
+    /* ================= BARIS 2 (PROGRESS + HP) ================= */
     
-  } catch (e) {
-    // biar ga spam error
-  }
+    const progPrefix = progData.prefix ?? '';
+    
+    const health = player.getComponent("minecraft:health");
+    const hp = Math.ceil(health.currentValue);
+    
+    /* ================= ADMIN OVERRIDE ================= */
+    
+    if (player.hasTag('admin')) {
+      player.nameTag =
+        `§l§6[Admin]§r ${player.name}\n${progPrefix} ${hp}`;
+      return;
+    }
+    
+    /* ================= FINAL ================= */
+    
+    player.nameTag =
+      `${rankPrefix} ${player.name}\n${progPrefix} ${hp}`;
+    
+  } catch {}
 }
 
-// update berkala
+/* ================= LOOP ================= */
+
 system.runInterval(() => {
-  for (const player of world.getPlayers()) {
-    updateNameTag(player);
+  for (const p of world.getPlayers()) {
+    updateNameTag(p);
   }
-}, 20); // tiap 1 detik
+}, 10);

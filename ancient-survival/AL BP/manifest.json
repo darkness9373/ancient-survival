@@ -16,52 +16,61 @@
         ]
     },
     "modules": [
-        {
-            "description": "-",
-            "type": "script",
-            "language": "javascript",
-            "uuid": "e51a1570-a078-4653-90dc-bc9113f8eb7e",
-            "version": [
-                1,
-                0,
-                0
-            ],
-            "entry": "scripts/main.js"
-        }
-    ],
+    {
+        "description": "-",
+        "type": "script",
+        "language": "javascript",
+        "uuid": "e51a1570-a078-4653-90dc-bc9113f8eb7e",
+        "version": [
+            1,
+            0,
+            0
+        ],
+        "entry": "scripts/main.js"
+    }],
     "dependencies": [
-        {
-            "uuid": "1a951f78-1647-420f-b3f6-87fe1eab7363",
-            "version": [
-                1,
-                0,
-                0
-            ]
-        },
-        {
-            "uuid": "97dd9ee4-9102-4d2f-b81f-c9764c94d82e",
-            "version": [
-                1,
-                0,
-                0
-            ]
-        },
-        
-        {
-            "uuid": "0ffc2cc7-349a-4284-af0d-1b6da234d808",
-            "version": [
-                1,
-                0,
-                2
-            ]
-        },
-        {
-            "module_name": "@minecraft/server",
-            "version": "2.6.0-beta"
-        },
-        {
-            "module_name": "@minecraft/server-ui",
-            "version": "2.1.0-beta"
-        }
-    ]
+    {
+        "uuid": "1a951f78-1647-420f-b3f6-87fe1eab7363",
+        "version": [
+            1,
+            0,
+            0
+        ]
+    },
+    {
+        "uuid": "97dd9ee4-9102-4d2f-b81f-c9764c94d82e",
+        "version": [
+            1,
+            0,
+            0
+        ]
+    },
+    {
+        "uuid": "ae5fbdca-6c13-4059-94e6-a63c1458efb0",
+        "version": [1, 0, 1]
+    },
+    {
+        "uuid": "0ffc2cc7-349a-4284-af0d-1b6da234d808",
+        "version": [
+            1,
+            0,
+            0
+        ]
+    },
+    {
+        "uuid": "3db20b3b-6a1f-4c60-bb1d-a736f2574c31",
+        "version": [
+            1,
+            0,
+            0
+        ]
+    },
+    {
+        "module_name": "@minecraft/server",
+        "version": "2.6.0-beta"
+    },
+    {
+        "module_name": "@minecraft/server-ui",
+        "version": "2.1.0-beta"
+    }]
 }

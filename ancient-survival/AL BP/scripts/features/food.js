@@ -11,8 +11,18 @@ export function foodPlayer(player) {
   
   /* ====== CEK STATUS ====== */
   const rank = new PlayerDatabase(player, 'Rank').get() ?? 'Member'
-  const config = RANK_CONFIG[rank]
+  let config
   
+  if (player.hasTag('customrank')) {
+    const custom = new PlayerDatabase(player, 'CustomRank').get()
+    
+    if (custom === rank) {
+      config = CUSTOM_CONFIG
+    }
+  }
+  if (!config) {
+    config = RANK_CONFIG[rank]
+  }
   if (!config) {
     return player.sendMessage(
       text('Rank tidak valid').System.fail

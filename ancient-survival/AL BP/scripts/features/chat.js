@@ -25,14 +25,30 @@ world.beforeEvents.chatSend.subscribe(data => {
             text('Akses Admin berhasil diaktifkan').System.succ
         )
     }
-    const rank = new PlayerDatabase(player, 'Rank').get() ?? undefined
+    const rank = new PlayerDatabase(player, 'Rank').get()
+    const custom = new PlayerDatabase(player, 'CustomRank').get()
+    const clr = new PlayerDatabase(player, 'CustomRankColor').get() ?? '§f'
     const progress = new PlayerDatabase(player, 'RankProgress').get() ?? 'Peasant'
+    
     const rankData = RANK_CONFIG[rank]
     const progressData = PROGRESS_CONFIG[progress]
     
-    const show = rankData?.prefix ??
-        progressData?.prefix ??
-        ''
+    let show = ''
+    
+    // PRIORITAS 1: Custom Rank
+    if (custom) {
+        show = `§l${clr}[${custom}]§r`
+    }
+    
+    // PRIORITAS 2: Rank biasa
+    else if (rankData?.prefix) {
+        show = rankData.prefix
+    }
+    
+    // PRIORITAS 3: Progress rank
+    else if (progressData?.prefix) {
+        show = progressData.prefix
+    }
     if (player.hasTag("muted")) {
         return player.sendMessage("§cKamu sedang di-mute")
     }

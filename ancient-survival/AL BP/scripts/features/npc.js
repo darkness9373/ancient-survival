@@ -497,9 +497,9 @@ const itemListBuy = {
         { id: 'cooked_porkchop', price: 5, tex: 'textures/items/porkchop_cooked' },
         
         { id: 'honey_bottle', price: 8, tex: 'textures/items/honey_bottle' },
-        { id: 'milk_bucket', price: 7, tex: 'textures/items/bucket_milk' },
+        { id: 'milk_bucket', price: 10, tex: 'textures/items/bucket_milk' },
         
-        { id: 'golden_carrot', price: 10, tex: 'textures/items/carrot_golden' },
+        { id: 'golden_carrot', price: 15, tex: 'textures/items/carrot_golden' },
         { id: 'golden_apple', price: 30, tex: 'textures/items/apple_golden' }
     ],
     /*
@@ -639,9 +639,9 @@ const itemListBuy = {
         { id: 'gold_ingot', price: 24, tex: 'textures/items/gold_ingot' },
         { id: 'quartz', price: 15, tex: 'textures/items/quartz' },
         { id: 'amethyst_shard', price: 25, tex: 'textures/items/amethyst_shard' },
-        { id: 'diamond', price: 70, tex: 'textures/items/diamond' },
+        { id: 'diamond', price: 75, tex: 'textures/items/diamond' },
         { id: 'netherite_scrap', price: 180, tex: 'textures/items/netherite_scrap' },
-        { id: 'obsidian', price: 25, tex: 'textures/blocks/obsidian' },
+        { id: 'obsidian', price: 30, tex: 'textures/blocks/obsidian' },
         { id: 'coal_block', price: 25, tex: 'textures/blocks/coal_block' }
     ],
     
@@ -649,56 +649,56 @@ const itemListBuy = {
     {
         name: 'Efficiency V',
         id: 'enchanted_book',
-        price: 220,
+        price: 225,
         tex: 'textures/items/book_enchanted',
         enchant: { id: 'efficiency', level: 5 }
     },
     {
         name: 'Unbreaking III',
         id: 'enchanted_book',
-        price: 170,
+        price: 175,
         tex: 'textures/items/book_enchanted',
         enchant: { id: 'unbreaking', level: 3 }
     },
     {
         name: 'Sharpness V',
         id: 'enchanted_book',
-        price: 215,
+        price: 220,
         tex: 'textures/items/book_enchanted',
         enchant: { id: 'sharpness', level: 5 }
     },
     {
         name: 'Protection IV',
         id: 'enchanted_book',
-        price: 180,
+        price: 185,
         tex: 'textures/items/book_enchanted',
         enchant: { id: 'protection', level: 4 }
     },
     {
         name: 'Fortune III',
         id: 'enchanted_book',
-        price: 235,
+        price: 240,
         tex: 'textures/items/book_enchanted',
         enchant: { id: 'fortune', level: 3 }
     },
     {
         name: 'Mending',
         id: 'enchanted_book',
-        price: 150,
+        price: 160,
         tex: 'textures/items/book_enchanted',
         enchant: { id: 'mending', level: 1 }
     },
     {
         name: 'Silk Touch',
         id: 'enchanted_book',
-        price: 175,
+        price: 180,
         tex: 'textures/items/book_enchanted',
         enchant: { id: 'silk_touch', level: 1 }
     },
     {
         name: 'Looting III',
         id: 'enchanted_book',
-        price: 225,
+        price: 230,
         tex: 'textures/items/book_enchanted',
         enchant: { id: 'looting', level: 3 }
     }],
@@ -718,20 +718,20 @@ const itemListBuy = {
 const itemListSell = {
     Mob_Drop: [
         { id: 'rotten_flesh', price: 2, tex: 'textures/items/rotten_flesh' },
-        { id: 'bone', price: 4, tex: 'textures/items/bone' },
+        { id: 'bone', price: 3, tex: 'textures/items/bone' },
         { id: 'string', price: 3, tex: 'textures/items/string' },
         { id: 'spider_eye', price: 4, tex: 'textures/items/spider_eye' }
     ],
     
     Material: [
         { id: 'copper_ingot', price: 2, tex: 'textures/items/copper_ingot' },
-        { id: 'iron_ingot', price: 6, tex: 'textures/items/iron_ingot' },
+        { id: 'iron_ingot', price: 5, tex: 'textures/items/iron_ingot' },
         { id: 'gold_ingot', price: 8, tex: 'textures/items/gold_ingot' },
         { id: 'amethyst_shard', price: 11, tex: 'textures/items/amethyst_shard' },
         { id: 'redstone', price: 2, tex: 'textures/items/redstone_dust' },
         { id: 'lapis_lazuli', price: 2, tex: 'textures/items/dye_powder_blue' },
-        { id: 'diamond', price: 22, tex: 'textures/items/diamond' },
-        { id: 'emerald', price: 20, tex: 'textures/items/emerald' },
+        { id: 'diamond', price: 20, tex: 'textures/items/diamond' },
+        { id: 'emerald', price: 22, tex: 'textures/items/emerald' },
         { id: 'echo_shard', price: 35, tex: 'textures/items/echo_shard' },
         { id: 'nether_star', price: 100, tex: 'textures/items/nether_star' },
         { id: 'obsidian', price: 20, tex: 'textures/blocks/obsidian' }
@@ -740,19 +740,18 @@ const itemListSell = {
     Farming: [
         { id: 'wheat', price: 3, tex: 'textures/items/wheat' },
         { id: 'carrot', price: 2, tex: 'textures/items/carrot' },
-        { id: 'sugar_cane', price: 4, tex: 'textures/items/reeds' }
+        { id: 'sugar_cane', price: 3, tex: 'textures/items/reeds' }
     ],
     
     Food: [
     {
         id: 'honey_bottle',
-        price: 4,
+        price: 5,
         tex: 'textures/items/honey_bottle'
     }],
     
     Animal_Drop: [
-        { id: 'feather', price: 2, tex: 'textures/items/feather' },
-        { id: 'leather', price: 3, tex: 'textures/items/leather' },
-        { id: 'rabbit_foot', price: 8, tex: 'textures/items/rabbit_foot' }
+        { id: 'feather', price: 3, tex: 'textures/items/feather' },
+        { id: 'leather', price: 3, tex: 'textures/items/leather' }
     ]
 }

@@ -15,7 +15,10 @@ import { tpaCommand, tpAcceptCommand, tpDenyCommand } from './tpa'
 import { inspectMenu } from './inspect';
 import { banMenu } from './ban';
 import { openUnbanMenu } from './unban';
-
+import { addCustomRankForm, CustomRankColor } from './customrank';
+import { topupUI } from './topup';
+import { LOBBY_POS } from './last';
+import { showRtpForm } from './rtp';
 
 
 system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
@@ -385,5 +388,70 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
             player.sendMessage(text('PvP mode dinonaktifkan').System.succ)
             system.run(() => player.removeTag('pvp'))
         }
+    })
+    customCommandRegistry.registerCommand(
+    {
+        name: 'as:addcustomrank',
+        description: 'Add Custom Rank to a player',
+        permissionLevel: CommandPermissionLevel.GameDirectors,
+        cheatsRequired: true
+    }, (origin) => {
+        const player = origin.sourceEntity
+        if (!(player instanceof Player)) return
+        system.run(() => addCustomRankForm(player))
+    })
+    customCommandRegistry.registerCommand(
+    {
+        name: 'as:topup',
+        description: 'Send gold to players who want to top up',
+        permissionLevel: CommandPermissionLevel.GameDirectors,
+        cheatsRequired: true
+    }, (origin) => {
+        const player = origin.sourceEntity
+        if (!(player instanceof Player)) return
+        system.run(() => topupUI(player))
+    })
+    customCommandRegistry.registerCommand(
+    {
+        name: 'as:lobby',
+        description: 'Teleport to lobby',
+        permissionLevel: CommandPermissionLevel.Any,
+        cheatsRequired: true
+    }, (origin) => {
+        const player = origin.sourceEntity
+        if (!(player instanceof Player)) return
+        system.run(() => {
+            player.tryTeleport({
+                x: LOBBY_POS.x,
+                y: LOBBY_POS.y,
+                z: LOBBY_POS.z
+            }, {
+                dimension: world.getDimension(LOBBY_POS.dimension),
+                keepVelocity: false
+            })
+            player.sendMessage(text('Berhasil teleport ke Lobby').System.succ)
+        })
+    })
+    customCommandRegistry.registerCommand(
+    {
+        name: 'as:customrank',
+        description: 'Edit Custom Rank Color',
+        permissionLevel: CommandPermissionLevel.Any,
+        cheatsRequired: true
+    }, (origin) => {
+        const player = origin.sourceEntity
+        if (!(player instanceof Player)) return
+        system.run(() => CustomRankColor(player))
+    })
+    customCommandRegistry.registerCommand(
+    {
+        name: 'as:rtp',
+        description: 'Teleport to random location',
+        permissionLevel: CommandPermissionLevel.Any,
+        cheatsRequired: true
+    }, (origin) => {
+        const player = origin.sourceEntity
+        if (!(player instanceof Player)) return
+        system.run(() => showRtpForm(player))
     })
 })

@@ -58,6 +58,16 @@ export const RANK_CONFIG = {
   }
 }
 
+export let CUSTOM_CONFIG = {
+  gold: 5000,
+  commands: ["warp", "food", "heal"],
+  warpLimit: 15,
+  foodCooldown: 60,
+  healCooldown: 180,
+  mythic: true,
+  level: 5
+}
+
 export const PROGRESS_CONFIG = {
   Peasant: {
     prefix: '§l§f[Peasant]§r',
@@ -170,3 +180,36 @@ export const OBJECTIVES = [
   'silver',
   'silverRaw'
 ]
+
+export const mcColors = [
+  { id: '§0', name: 'Black' },
+  { id: '§1', name: 'Dark Blue' },
+  { id: '§2', name: 'Dark Green' },
+  { id: '§3', name: 'Dark Aqua' },
+  { id: '§4', name: 'Dark Red' },
+  { id: '§5', name: 'Dark Purple' },
+  { id: '§6', name: 'Gold' },
+  { id: '§7', name: 'Gray' },
+  { id: '§8', name: 'Dark Gray' },
+  { id: '§9', name: 'Blue' },
+  { id: '§a', name: 'Green' },
+  { id: '§b', name: 'Aqua' },
+  { id: '§c', name: 'Red' },
+  { id: '§d', name: 'Light Purple' },
+  { id: '§e', name: 'Yellow' },
+  { id: '§f', name: 'White' },
+  
+  // Bedrock-only
+  { id: '§g', name: 'Minecoin Gold' },
+  { id: '§h', name: 'Material Quartz' },
+  { id: '§i', name: 'Material Iron' },
+  { id: '§j', name: 'Material Netherite' },
+  { id: '§m', name: 'Material Redstone' },
+  { id: '§n', name: 'Material Copper' },
+  { id: '§p', name: 'Material Gold' },
+  { id: '§q', name: 'Material Emerald' },
+  { id: '§s', name: 'Material Diamond' },
+  { id: '§t', name: 'Material Lapis' },
+  { id: '§u', name: 'Material Amethyst' },
+  { id: '§v', name: 'Material Resin' }
+];

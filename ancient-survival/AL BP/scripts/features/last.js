@@ -28,7 +28,7 @@ function saveLastLocation(player) {
     db.set(JSON.stringify(add))
 }
 
-function teleportToLobby(player) {
+export function teleportToLobby(player) {
     player.tryTeleport(
     {
         x: LOBBY_POS.x,
@@ -81,7 +81,7 @@ function teleportToCheckpoint(player, data) {
 
 
 // config/lobby.js
-const LOBBY_POS = {
+export const LOBBY_POS = {
     x: 27,
     y: 262,
     z: -60,

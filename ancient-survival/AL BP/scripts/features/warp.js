@@ -4,13 +4,25 @@ import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
 import OpenUI from "../extension/OpenUI";
 import { getData } from "../config/database";
 import { text } from '../config/text';
-import { RANK_CONFIG } from "../config/system";
+import { RANK_CONFIG, CUSTOM_CONFIG } from "../config/system";
 
 /**
  * @typedef {import("@minecraft/server").Vector3} Vector3
  */
 
-
+function getWarpLimit(player) {
+    if (player.hasTag('admin')) return Infinity;
+    
+    const custom = new PlayerDatabase(player, 'CustomRank').get();
+    if (custom && CUSTOM_CONFIG.warpLimit !== undefined) {
+        return CUSTOM_CONFIG.warpLimit;
+    }
+    
+    const rankName = new PlayerDatabase(player, 'Rank').get() ?? 'Member';
+    const rankData = RANK_CONFIG[rankName] ?? RANK_CONFIG.Member;
+    
+    return rankData.warpLimit ?? 1;
+}
 /* ===========================
    MAIN UI
 =========================== */
@@ -47,15 +59,7 @@ export function warpUI(player) {
     /* ===== PRIVATE WARP ===== */
     const privateData = new PlayerDatabase(player, 'Warp')
     const privateList = JSON.parse(privateData.get() ?? '[]')
-    const rankName = new PlayerDatabase(player, 'Rank').get() ?? 'Member'
-    const rankData = RANK_CONFIG[rankName] ?? RANK_CONFIG.Member
-    
-    let limit = rankData.warpLimit ?? 1
-    
-    // ADMIN = UNLIMITED
-    if (player.hasTag('admin')) {
-        limit = Infinity
-    }
+    const limit = getWarpLimit(player);
     const db = new PlayerDatabase(player, 'Warp')
     const list = JSON.parse(db.get() ?? '[]')
     warp.label(
@@ -83,15 +87,7 @@ export function warpUI(player) {
 }
 
 function privateAddWarp(player) {
-    const rankName = new PlayerDatabase(player, 'Rank').get() ?? 'Member'
-    const rankData = RANK_CONFIG[rankName] ?? RANK_CONFIG.Member
-    
-    let limit = rankData.warpLimit ?? 1
-    
-    // ADMIN = UNLIMITED
-    if (player.hasTag('admin')) {
-        limit = Infinity
-    }
+    const limit = getWarpLimit(player);
     const db = new PlayerDatabase(player, 'Warp')
     const list = JSON.parse(db.get() ?? '[]')
     

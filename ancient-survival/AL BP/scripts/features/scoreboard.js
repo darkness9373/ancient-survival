@@ -54,10 +54,29 @@ system.runInterval(() => {
     for (const player of world.getPlayers()) {
         const rnk = new PlayerDatabase(player, 'Rank').get() ?? 'Member'
         const prog = new PlayerDatabase(player, 'RankProgress').get() ?? 'Peasant'
-        const rankShow = 
-            RANK_CONFIG[rnk].show ??
-            PROGRESS_CONFIG[prog].show ??
-            '§l§bMember§r'
+        
+        const custom = new PlayerDatabase(player, 'CustomRank').get()
+        const clr = new PlayerDatabase(player, 'CustomRankColor').get() ?? '§f'
+        
+        // ===== PRIORITY LOGIC =====
+        let rankShow
+        
+        // 1️⃣ Custom Rank
+        if (custom) {
+            rankShow = `§l${clr}${custom}§r`
+        }
+        // 2️⃣ Rank biasa
+        else if (RANK_CONFIG[rnk]?.show) {
+            rankShow = RANK_CONFIG[rnk].show
+        }
+        // 3️⃣ Progress
+        else if (PROGRESS_CONFIG[prog]?.show) {
+            rankShow = PROGRESS_CONFIG[prog].show
+        }
+        // fallback
+        else {
+            rankShow = '§l§bMember§r'
+        }
         const ping = Score.get(player, 'ping') ?? 0
         const pingShow = ping >= 100 ? `§e${ping}ms§r` : `§a${ping}ms§r`;
         const data = [{
@@ -75,7 +94,7 @@ system.runInterval(() => {
             DAILY: new PlayerDatabase(player, "LoginDayCount").get() ?? 1
         }]
         const scr = new PlayerDatabase(player, 'Scoreboard').get() ?? 'show';
-        if (scr === 'hide') return;
+        if (scr === 'hide') continue;
         player.onScreenDisplay.setTitle(
             getPlaceholder(board.Line.join('\n'), data)
         )

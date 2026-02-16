@@ -132,7 +132,7 @@ function isPassable(block) {
 }
 
 function findNearbySafeSpot(dim, x, y, z) {
-    const radius = 5;
+    const radius = 6;
     
     for (let dy = -2; dy <= 2; dy++) {
         for (let dx = -radius; dx <= radius; dx++) {
@@ -383,10 +383,10 @@ world.afterEvents.itemUse.subscribe(ev => {
     })
 })
 
-const LOBBY_POS = {
-    x: 27,
-    y: 262,
-    z: -60,
+const GRAVE_POS = {
+    x: 24,
+    y: 113,
+    z: -49,
     dimension: 'overworld'
 }
 
@@ -430,11 +430,11 @@ world.afterEvents.entityDie.subscribe(data => {
             }
             
         } else {
-            dim = world.getDimension(LOBBY_POS.dimension)
+            dim = world.getDimension(GRAVE_POS.dimension)
             
-            const sx = Math.floor(LOBBY_POS.x);
-            const sy = Math.floor(LOBBY_POS.y);
-            const sz = Math.floor(LOBBY_POS.z);
+            const sx = Math.floor(GRAVE_POS.x);
+            const sy = Math.floor(GRAVE_POS.y);
+            const sz = Math.floor(GRAVE_POS.z);
             
             const spawnBlock = dim.getBlock({ x: sx, y: sy, z: sz });
             
