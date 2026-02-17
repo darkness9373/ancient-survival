@@ -229,7 +229,7 @@ export function convertSilverToGold(player) {
     }
     const form = new ModalFormData()
         .title('Convert Silver to Gold')
-        .textField('Isi nominal silver yang ingin dikonversi', 'ex: 1000')
+        .textField('Isi nominal silver yang ingin dikonversi\nRate:\n  500 Silver = 200 Gold', 'ex: 1000')
         .submitButton('Convert')
     OpenUI.force(player, form).then(r => {
         if (r.canceled) return
