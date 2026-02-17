@@ -54,4 +54,4 @@ system.runInterval(() => {
   for (const p of world.getPlayers()) {
     updateNameTag(p);
   }
-}, 10);
+}, 20);

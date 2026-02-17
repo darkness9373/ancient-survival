@@ -149,8 +149,8 @@ const weapon = [
 system.runInterval(() => {
   world.getPlayers().forEach(player => {
     if (player.hasTag('customrank')) {
-      player.addEffect('health_boost', 3, { amplifier: 2 })
-      player.addEffect('speed', 3, { amplifier: 1 })
+      player.addEffect('health_boost', 60, { amplifier: 2 })
+      player.addEffect('speed', 60, { amplifier: 1 })
     }
   })
 }, 40)

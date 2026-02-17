@@ -3,9 +3,6 @@ import { PlayerDatabase } from '../extension/Database'
 import Score from '../extension/Score'
 import Extra from '../extension/Extra'
 import { playtime } from './timeplayed'
-import { ModalFormData } from '@minecraft/server-ui';
-import OpenUI from '../extension/OpenUI'
-import { text } from '../config/text';
 import { RANK_CONFIG, PROGRESS_CONFIG } from '../config/system';
 
 
@@ -99,7 +96,7 @@ system.runInterval(() => {
             getPlaceholder(board.Line.join('\n'), data)
         )
     }
-}, 5)
+}, 20)
 
 /* =========================
    PING SIMULATION

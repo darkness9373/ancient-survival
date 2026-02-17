@@ -117,7 +117,6 @@ world.beforeEvents.entityHurt.subscribe(data => {
     return
   }
   
-  const attacker = data.damageSource.damagingEntity
   if (attacker instanceof Player && isInGrave(attacker.location)) {
     data.cancel = true
   }

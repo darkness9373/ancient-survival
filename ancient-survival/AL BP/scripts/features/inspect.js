@@ -1,4 +1,4 @@
-import { world } from '@minecraft/server';
+import { EntityComponentTypes, Player, world } from '@minecraft/server';
 import { ActionFormData, ModalFormData } from '@minecraft/server-ui';
 import OpenUI from '../extension/OpenUI';
 import Score from '../extension/Score';
@@ -6,6 +6,12 @@ import { PlayerDatabase } from '../extension/Database';
 import { playtime } from './timeplayed';
 import { text } from '../config/text'
 
+
+/**
+ * 
+ * @param {Player} player 
+ * @returns 
+ */
 export function inspectMenu(player) {
   const players = world.getPlayers().filter(p => p.id !== player.id)
   if (players.length === 0) {
@@ -20,7 +26,7 @@ export function inspectMenu(player) {
     if (r.canceled) return
     const selected = r.formValues[0]
     const target = players[selected]
-    if (!target || !target.isValid()) {
+    if (!target) {
       return player.sendMessage(text('Player tidak tersedia').System.warn)
     }
     inspectPlayer(player, target)
@@ -31,14 +37,18 @@ function inspectPlayer(player, target) {
   const gold = Score.get(target, 'gold') ?? 0
   const sec = Score.get(target, 'timePlayed') ?? 0
   const times = playtime(sec)
-  const rank = new PlayerDatabase(target, 'Rank').get() ?? 'Newbie'
+  const rank = new PlayerDatabase(target, 'Rank')
+  const prog = new PlayerDatabase(target, 'Progression')
+  const custom = new PlayerDatabase(target, 'CustomRank')
+  const clr = new PlayerDatabase(target, 'CustomRankColor')
+  const show = custom.get() ? `${clr.get() ?? '§f'}${custom.get()}§r`  : rank ? `${rank.get()}§r` : prog ? `${prog.get()}§r` : 'None'
   const form = new ActionFormData()
   form.title(`Inspect ${target.name}`)
   form.body(
     `\n > Name : ${target.name}` +
     `\n > ID : ${target.id}` +
     `\n > Coins : ${gold}` +
-    `\n > Rank : ${rank}` +
+    `\n > Rank : ${show}` +
     `\n > Time Played : ${times}` +
     `\n\n`
   )
@@ -66,6 +76,7 @@ function inspectPlayer(player, target) {
     }
   })
 }
+
 
 function teleportToPlayer(admin, target) {
   try {

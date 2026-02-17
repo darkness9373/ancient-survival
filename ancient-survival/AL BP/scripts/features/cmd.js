@@ -10,7 +10,7 @@ import { healPlayer } from './heal'
 import { foodPlayer } from './food'
 import { text } from '../config/text'
 import { checkpointCommand } from './last';
-import { sendGold, sendSilver } from './money';
+import { sendGold, sendSilver, convertSilverToGold } from './money';
 import { tpaCommand, tpAcceptCommand, tpDenyCommand } from './tpa'
 import { inspectMenu } from './inspect';
 import { banMenu } from './ban';
@@ -454,4 +454,16 @@ system.beforeEvents.startup.subscribe(({ customCommandRegistry }) => {
         if (!(player instanceof Player)) return
         system.run(() => showRtpForm(player))
     })
+    customCommandRegistry.registerCommand(
+        {
+            name: 'as:convert',
+            description: 'Convert Silver to Gold',
+            permissionLevel: CommandPermissionLevel.Any,
+            cheatsRequired: true
+        }, (origin) => {
+            const player = origin.sourceEntity
+            if (!(player instanceof Player)) return
+            system.run(() => convertSilverToGold(player))
+        }
+    )
 })

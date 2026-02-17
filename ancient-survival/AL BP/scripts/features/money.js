@@ -216,3 +216,47 @@ export function sendSilver(player) {
         )
     })
 }
+
+export function convertSilverToGold(player) {
+    const silverToGold = 500
+    const goldGain = 200
+    const silver = Score.get(player, 'silver') ?? 0
+    
+    if (silver < silverToGold) {
+        return player.sendMessage(
+            text(`Kamu membutuhkan minimal ${silverToGold} Silver untuk dikonversi`).System.fail
+        )
+    }
+    const form = new ModalFormData()
+        .title('Convert Silver to Gold')
+        .textField('Isi nominal silver yang ingin dikonversi', 'ex: 1000')
+        .submitButton('Convert')
+    OpenUI.force(player, form).then(r => {
+        if (r.canceled) return
+        
+        const moneyInput = r.formValues[0]
+        const amount = parseInt(moneyInput.trim())
+        
+        if (!Number.isInteger(amount) || amount <= 0) {
+            return player.sendMessage(
+                text('Nominal harus berupa angka bulat positif').System.fail
+            )
+        }
+        
+        if (silver < amount) {
+            return player.sendMessage(
+                text('Silver kamu tidak mencukupi').System.fail
+            )
+        }
+        
+        const goldToAdd = Math.floor(amount / silverToGold) * goldGain
+        const silverToRemove = Math.floor(amount / silverToGold) * silverToGold
+        
+        Score.remove(player, 'silver', silverToRemove)
+        Score.add(player, 'gold', goldToAdd)
+        
+        player.sendMessage(
+            text(`Kamu mengkonversi §e${amount}§a Silver ke §b${goldToAdd} Gold`).System.succ
+        )
+    })
+}
